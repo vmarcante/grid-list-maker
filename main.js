@@ -4,21 +4,29 @@ items = [];
 availableColors = ["#00B500", "#000064", "#F6D101", "#D101F6", "#F60101", "#1E90FF", "#00FF7F", "#00FF00", "#8B0000"]
 previewItem = {};
 canAdd = false;
+canSaveImg = false;
 //=-=-=--=-=-=-=-=-=
 
 //=-=-=--=-=-=-=-=-=
 //  HTML Objects
-const ItemRender = (itemObj) => {
+const ItemRender = (itemObj, addToGrid) => {
     const headerTextValid = stringValid(itemObj.headerText);
     const headerColorValid = stringValid(itemObj.headerColor, "#");
     const bannerValid = stringValid(itemObj.imageBanner);
-    let html = `<div class="item-wrapper">`;
+    let html = `<div ${addToGrid ? "grid-item-" + itemObj.id : ""} class="item-wrapper">`;
 
     if (!bannerValid) {
         return "";
     }
 
+    if (addToGrid) {
+        html += `<button class="delete-btn" onclick="deleteItem(${itemObj.id})">
+            <img src="./assets/delete.png" />
+        </button>`
+    }
+
     html += `<div class="item">`;
+
     if (headerTextValid) {
         html += `
         <div class="header" style="background-color:${headerColorValid ? itemObj.headerColor : "#000"}">
@@ -64,6 +72,24 @@ function stringValid(string, containsChar) {
 function verifyCanAdd() {
     document.getElementById("create-item-btn").disabled = !stringValid(previewItem.imageBanner);
 }
+
+function verifyCanSaveImg() {
+    let valid = true;
+
+    if (!items || items.length == 0) {
+        valid = false;
+    }
+
+    items.forEach(x => {
+        if (!x.imageBanner.includes("data:image/")) {
+            valid = false;
+        }
+    });
+
+    let btn = document.getElementById("export-items-btn");
+    btn.title = valid ? "" : "Não é possível exportar itens com imagens de URLs externas, apenas upload";
+    btn.disabled = !valid;
+}
 //=-=-=--=-=-=-=-=-=
 
 //=-=-=--=-=-=-=-=-=
@@ -71,6 +97,7 @@ function verifyCanAdd() {
 function initialSetup() {
     changeGridColumnsAndRows();
     verifyCanAdd();
+    verifyCanSaveImg();
     toggleBannerInput();
     renderColorsInput();
     document.getElementById('bannerUpload').addEventListener('change', convertFileToPreviewImg);
@@ -113,6 +140,8 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
         }
         previewContainer.innerHTML = ItemRender(previewItem);
         verifyCanAdd();
+        verifyCanSaveImg();
+
         return;
     } else {
         const imgElement = new Image();
@@ -121,12 +150,15 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
             previewItem.imageBanner = value;
             previewContainer.innerHTML = ItemRender(previewItem);
             verifyCanAdd();
+            verifyCanSaveImg();
         };
 
         imgElement.onerror = function () {
             previewItem.imageBanner = undefined;
             previewContainer.innerHTML = ItemRender(previewItem);
             verifyCanAdd();
+            verifyCanSaveImg();
+
         };
     }
 
@@ -154,6 +186,8 @@ function convertFileToPreviewImg(uploadEvent) {
         uploadEvent.target = "";
         uploadEvent.files = [];
         verifyCanAdd();
+        verifyCanSaveImg();
+
         return;
     };
 
@@ -186,7 +220,7 @@ function addNewItem() {
     let newItem = { ...previewItem };
     newItem.id = items.length + 1;
     items.push(newItem);
-    itemsWrapperContainer.innerHTML += ItemRender(newItem);
+    itemsWrapperContainer.innerHTML += ItemRender(newItem, true);
     resetItem();
 }
 
@@ -202,29 +236,34 @@ function resetItem() {
         x.checked = false;
     });
     verifyCanAdd();
+    verifyCanSaveImg();
+
+}
+
+function deleteItem(itemId) {
+    items = items.filter(item => item.id != itemId);
+    renderAllItems();
 }
 
 function renderAllItems() {
     let itemsWrapperContainer = document.getElementById("items-wrapper");
     itemsWrapperContainer.innerHTML = "";
     items.forEach(item => {
-        itemsWrapperContainer.innerHTML += ItemRender(item);
+        itemsWrapperContainer.innerHTML += ItemRender(item, true);
     });
+    verifyCanAdd();
+    verifyCanSaveImg();
 }
 
 function saveImage() {
-    html2canvas(document.getElementById("result"), {
-        allowTaint: true,
-        useCORS: false,
-        logging: true,
-        letterRendering: 1,
-
-    }).then(function (img) {
-        let imageDataUrl = img.toDataURL("image/png");
-        var a = document.createElement("a");
-        a.href = imageDataUrl;
-        a.download = "Lista_2023.png";
-        a.click();
+    html2canvas(document.getElementById("result")).then(function (img) {
+        setTimeout(() => {
+            let imageDataUrl = img.toDataURL("image/png");
+            var a = document.createElement("a");
+            a.href = imageDataUrl;
+            a.download = "Lista_2023.png";
+            a.click();
+        }, 100);
     });
 }
 
@@ -246,8 +285,8 @@ function getCacheItems() {
 
     items = JSON.parse(itemsSaved);
     sessionStorage.removeItem("grid-list-items");
-    alert("Itens importados e removidos do cache, se necessário, salve novamente.");
     renderAllItems();
+    alert("Itens importados e removidos do cache, se necessário, salve novamente.");
 
 }
 

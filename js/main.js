@@ -31,10 +31,10 @@ const ItemRender = (itemObj) => {
     html += `</div>`;
 
     if (itemObj.replayed) {
-        html += `<img class="replayed" src="/assets/replayed.png"/>`
+        html += `<img class="replayed" src="./assets/replayed.png"/>`
     }
     if (itemObj.completed) {
-        html += `<img class="completed" src="/assets/trophy.png"/>`
+        html += `<img class="completed" src="./assets/trophy.png"/>`
     }
 
     html += `</div>`;

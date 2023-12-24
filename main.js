@@ -196,7 +196,9 @@ function resetItem() {
     previewContainer.innerHTML = "";
     let inputs = document.getElementsByTagName("input");
     Array.from(inputs).forEach(x => {
-        x.value = "";
+        if (x.type != "radio") {
+            x.value = "";
+        }
         x.checked = false;
     });
     verifyCanAdd();

@@ -213,13 +213,18 @@ function renderAllItems() {
 }
 
 function saveImage() {
-    html2canvas(document.getElementById("result")).then(function (image) {
-        let imageDataUrl = image.toDataURL();
+    html2canvas(document.getElementById("result"), {
+        allowTaint: true,
+        useCORS: false,
+        logging: true,
+        letterRendering: 1,
+
+    }).then(function (img) {
+        let imageDataUrl = img.toDataURL("image/png");
         var a = document.createElement("a");
         a.href = imageDataUrl;
         a.download = "Lista_2023.png";
         a.click();
-        // document.body.appendChild(image);
     });
 }
 

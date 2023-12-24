@@ -281,7 +281,7 @@ input {
 }
 
 .result {
-    background: url("../assets/background.png");
+    background: url("./assets/background.png");
 }
 
 .year {

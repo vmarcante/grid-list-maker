@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content List Maker</title>
+
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <main>
+        <div class="row gap-12">
+            <div class="setup-container column gap-12">
+                <div class="grid-config-container column">
+                    <span class="title">CONFIGURAÇÕES GRID</span>
+                    <div class="columns-config column gap-12">
+                        <div class="row gap-12">
+                            <label>Número de colunas:</label>
+                            <select id="columnsSelect" onchange="changeGridColumnsAndRows()" name="columnsSelect">
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <input type="text" id="listTitleInput" oninput="changeListTitle()"
+                            placeholder="Título de exibição"></input>
+                    </div>
+                    <div class="row">
+                        <button type="button" class="save-items-btn" id="save-items-btn" onclick="saveCache()">Salvar
+                            itens em cache </button>
+                        <!-- <button type="button" class="export-items-btn" id="export-items-btn"
+                            onclick="saveImage()">Exportar para Imagem </button> -->
+                    </div>
+                </div>
+                <div class="add-item-container column">
+                    <span class="title">NOVO ITEM</span>
+                    <div class="header-config">
+                        <h4>Cabeçalho (Opcional):</h4>
+                        <input type="text" id="headerTextInput" oninput="updatePreview('headerText', this.id, 'value')"
+                            placeholder="Texto do Cabeçalho"></input>
+
+                        <div class="color-config">
+                            <span>Cor:</span>
+                            <div id="headerColorsInput" class="row gap-6"></div>
+                        </div>
+                    </div>
+
+                    <div class="banner-config">
+                        <h4>Imagem:</h4>
+                        <div class="row justify-center gap-12">
+                            <label>
+                                <input type="radio" checked="true" name="bannerInputType" id="uploadCheckbox"
+                                    onchange="toggleBannerInput()"> Upload de Imagem
+                            </label>
+                            <label>
+                                <input type="radio" name="bannerInputType" id="urlCheckbox"
+                                    onchange="toggleBannerInput()">
+                                URL da Imagem
+                            </label>
+                        </div>
+
+                        <div class="bannerUploadSection" id="bannerUploadSection">
+                            <input type="file" id="bannerUpload" accept="image/*">
+                        </div>
+                        <div class="bannerUrlSection" id="bannerUrlSection">
+                            <label for="bannerUrlInput">URL da Imagem:</label>
+                            <input type="text" id="bannerUrlInput"
+                                oninput="updatePreview('imageBanner', this.id, 'value', true)"
+                                placeholder="Insira a URL da imagem">
+                        </div>
+                    </div>
+
+                    <div class="footer-config">
+                        <h4>Rodapé (Opcional):</h4>
+                        <div class="row justify-center gap-12">
+                            <label>
+                                <input type="checkbox" id="replayedCheckbox"
+                                    onchange="updatePreview('replayed', this.id, 'checked')">
+                                Rezerado
+                            </label>
+                            <label>
+                                <input type="checkbox" id="completedCheckbox"
+                                    onchange="updatePreview('completed', this.id, 'checked')">
+                                100%
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button type="button" class="add-btn" id="create-item-btn" onclick="addNewItem()">Adicionar
+                            item</button>
+                        <button type="button" class="reset-btn" id="reset-item-btn" onclick="resetItem()">Apagar
+                            item</button>
+                    </div>
+                </div>
+
+                <div class="column gap-12 preview-container">
+                    <h4>Prévia:</h4>
+                    <div id="preview" class="preview"></div>
+                </div>
+            </div>
+
+            <div id="result" class="result column">
+                <div class="row space-between align-center">
+                    <div class="column bold">
+                        <div class="row align-center gap-6">
+                            <img src="/assets/replayed.png" width="40px" height="40px">
+                            <span>- 100% | Platina | 1000G</span>
+                        </div>
+                        <div class="row align-center gap-6">
+                            <img src="/assets/trophy.png" width="40px" height="40px">
+                            <span>- Rezerado</span>
+                        </div>
+                    </div>
+                    <div class="column gap-1 align-center">
+                        <span class="year">2023</span>
+                        <span id="list-name" class="list-name"></span>
+                    </div>
+                </div>
+                <div id="items-wrapper" class="items-wrapper"></div>
+            </div>
+        </div>
+    </main>
+</body>
+
+<script src="/js/main.js"></script>
+<script src="/js/html2canvas.min.js"></script>
+
+</html>

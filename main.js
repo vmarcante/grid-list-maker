@@ -1,7 +1,7 @@
 //=-=-=--=-=-=-=-=-=
 //  Global Variables
 items = [];
-availableColors = ["#00B500", "#000064", "#F6D101", "#D101F6", "#F60101"]
+availableColors = ["#00B500", "#000064", "#F6D101", "#D101F6", "#F60101", "#1E90FF", "#00FF7F", "#00FF00", "#8B0000"]
 previewItem = {};
 canAdd = false;
 //=-=-=--=-=-=-=-=-=

@@ -21,7 +21,7 @@ const ItemRender = (itemObj, addToGrid) => {
 
     if (addToGrid) {
         html += `<button class="delete-btn" onclick="deleteItem(${itemObj.id})">
-            <img src="./assets/delete.png" />
+            <img src="./assets/delete.svg" />
         </button>`
     }
 
@@ -45,6 +45,22 @@ const ItemRender = (itemObj, addToGrid) => {
         html += `<img class="completed" src="./assets/trophy.png"/>`
     }
 
+    if (!addToGrid) {
+        html += `<div id="rank-selector-wrapper" class="rank-selector-wrapper">`;
+        for (let starPosition = 1; starPosition <= 10; starPosition++) {
+            const sidePosition = starPosition % 2 == 0 ? 'right' : 'left';
+            html += `<img onclick="updateStarRatingSelected(${starPosition})" alt="Estrela de avaliação" height="32px" width="16px" src="./assets/empty-star-${sidePosition}.svg" class="half-star ${sidePosition}" id="preview-star-${starPosition}">`;
+        }
+        html += `</div>`
+    } else {
+        html += `<div id="rank-selector-wrapper" class="rank-selector-wrapper">`;
+        for (let starPosition = 1; starPosition <= 10; starPosition++) {
+            const sidePosition = starPosition % 2 == 0 ? 'right' : 'left';
+            html += `<img alt="Estrela de avaliação" height="32px" width="16px" src="./assets/${starPosition <= itemObj.starRating ? 'filled' : 'empty'}-star-${sidePosition}.svg" class="set half-star ${sidePosition}" id="star-${starPosition}">`;
+        }
+        html += `</div>`
+    }
+
     html += `</div>`;
     return html;
 }
@@ -57,6 +73,8 @@ const ColorInput = (color, indexId, activated) => {
             </label>
         `;
     return html;
+
+
 }
 //=-=-=--=-=-=-=-=-=
 
@@ -139,6 +157,7 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
             previewItem[propName] = undefined;
         }
         previewContainer.innerHTML = ItemRender(previewItem);
+        handleStarCounterObserver();
         verifyCanAdd();
         verifyCanSaveImg();
 
@@ -149,6 +168,8 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
         imgElement.onload = function () {
             previewItem.imageBanner = value;
             previewContainer.innerHTML = ItemRender(previewItem);
+            handleStarCounterObserver();
+
             verifyCanAdd();
             verifyCanSaveImg();
         };
@@ -156,6 +177,8 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
         imgElement.onerror = function () {
             previewItem.imageBanner = undefined;
             previewContainer.innerHTML = ItemRender(previewItem);
+            handleStarCounterObserver();
+
             verifyCanAdd();
             verifyCanSaveImg();
 
@@ -163,7 +186,59 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
     }
 
     return;
+}
 
+function updateStarRatingSelected(starRating) {
+    previewItem["starRating"] = starRating;
+}
+
+function handleStarCounterObserver(deleteObserver) {
+    let starsWrapper = document.getElementById("rank-selector-wrapper");
+    if (starsWrapper) {
+
+        const handlerFunction = () => {
+            const minimumStars = previewItem["starRating"] ? previewItem["starRating"] : 1;
+            for (let i = 10; i >= minimumStars; i--) {
+                const sidePosition = i % 2 == 0 ? 'right' : 'left';
+                document.getElementById(`preview-star-${i}`).setAttribute("src", `./assets/empty-star-${sidePosition}.svg`);
+            }
+
+            for (let i = 1; i <= minimumStars; i++) {
+                const sidePosition = i % 2 == 0 ? 'right' : 'left';
+                document.getElementById(`preview-star-${i}`).setAttribute("src", `./assets/filled-star-${sidePosition}.svg`);
+            }
+        };
+
+        if (deleteObserver) {
+            document.getElementById("rank-selector-wrapper").removeEventListener('mouseleave', handlerFunction);
+        } else {
+            document.getElementById("rank-selector-wrapper").addEventListener('mouseleave', handlerFunction);
+        }
+    }
+
+    let stars = document.getElementsByClassName("half-star");
+    for (let starElementIndex = 0; starElementIndex < stars.length; starElementIndex++) {
+        let element = stars[starElementIndex];
+        const handlerFunction = (e) => {
+            const targetPosition = (e.target.id.toString()).replace("preview-star-", "");
+            for (let i = 1; i <= targetPosition; i++) {
+                const sidePosition = i % 2 == 0 ? 'right' : 'left';
+                let star = document.getElementById(`preview-star-${i}`);
+                star.setAttribute("src", `./assets/filled-star-${sidePosition}.svg`);
+            }
+
+            for (let i = 10; i > targetPosition; i--) {
+                const sidePosition = i % 2 == 0 ? 'right' : 'left';
+                document.getElementById(`preview-star-${i}`).setAttribute("src", `./assets/empty-star-${sidePosition}.svg`);
+            }
+        };
+
+        if (deleteObserver) {
+            element.removeEventListener('mouseover', handlerFunction)
+        } else {
+            element.addEventListener('mouseover', handlerFunction);
+        }
+    }
 }
 
 function convertFileToPreviewImg(uploadEvent) {
@@ -182,6 +257,7 @@ function convertFileToPreviewImg(uploadEvent) {
     fileReader.onload = function (e) {
         previewItem.imageBanner = e.target.result;
         previewContainer.innerHTML = ItemRender(previewItem);
+        handleStarCounterObserver();
 
         uploadEvent.target = "";
         uploadEvent.files = [];
@@ -199,15 +275,15 @@ initialSetup();
 
 //=-=-=--=-=-=-=-=-=
 //  GRID SETUP
-function changeGridColumnsAndRows() {
-    const numberOfColumns = document.getElementById("columnsSelect").value;
+function changeGridColumnsAndRows(numberOfColumns) {
+    // const numberOfColumns = document.getElementById("columnsSelect").value;
     let wrapperContainer = document.getElementById("items-wrapper");
-    wrapperContainer.style.gridTemplateColumns = `repeat(${numberOfColumns}, minmax(200px, 1fr))`;
+    wrapperContainer.style.gridTemplateColumns = `repeat(${numberOfColumns}, minmax(220px, 1fr))`;
 }
 
 function changeListTitle() {
     const value = document.getElementById("listTitleInput").value;
-    let titleContainer = document.getElementById("list-name");
+    let titleContainer = document.getElementById("custom-title");
     if (stringValid(value)) {
         titleContainer.innerHTML = value;
     } else {
@@ -221,6 +297,7 @@ function addNewItem() {
     newItem.id = items.length + 1;
     items.push(newItem);
     itemsWrapperContainer.innerHTML += ItemRender(newItem, true);
+    autoAdjustCollumns();
     resetItem();
 }
 
@@ -237,6 +314,7 @@ function resetItem() {
     });
     verifyCanAdd();
     verifyCanSaveImg();
+    handleStarCounterObserver(true);
 
 }
 
@@ -253,6 +331,14 @@ function renderAllItems() {
     });
     verifyCanAdd();
     verifyCanSaveImg();
+    autoAdjustCollumns();
+}
+
+function autoAdjustCollumns() {
+    const numberOfItems = items.length;
+    if (numberOfItems > 0) {
+        changeGridColumnsAndRows(Math.round(Math.sqrt(numberOfItems)));
+    }
 }
 
 function saveImage() {
@@ -273,8 +359,12 @@ function saveCache() {
         return;
     }
 
-    sessionStorage.setItem("grid-list-items", JSON.stringify(items));
-    alert("Os itens foram salvos no cache da sessão do navegador.");
+    try {
+        sessionStorage.setItem("grid-list-items", JSON.stringify(items));
+        alert("Os itens foram salvos no cache da sessão do navegador.");
+    } catch (exception) {
+        alert("Ocorreu um erro ao salvar os dados em cache do navegador, tente novamente com imagens menores.");
+    }
 }
 
 function getCacheItems() {

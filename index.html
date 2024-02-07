@@ -17,7 +17,7 @@
                 <div class="grid-config-container column">
                     <span class="title">CONFIGURAÇÕES GRID</span>
                     <div class="columns-config column gap-12">
-                        <div class="row gap-12">
+                        <!-- <div class="row gap-12">
                             <label>Número de colunas:</label>
                             <select id="columnsSelect" onchange="changeGridColumnsAndRows()" name="columnsSelect">
                                 <option value="2">2</option>
@@ -25,7 +25,7 @@
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
-                        </div>
+                        </div> -->
                         <input type="text" id="listTitleInput" oninput="changeListTitle()"
                             placeholder="Título de exibição"></input>
                     </div>
@@ -105,7 +105,7 @@
             </div>
 
             <div id="result" class="result column">
-                <div class="row space-between align-center">
+                <div class="row space-between  gap-12 align-center">
                     <div class="column bold">
                         <div class="row align-center gap-6">
                             <img src="./assets/replayed.png" width="40px" height="40px">
@@ -117,8 +117,7 @@
                         </div>
                     </div>
                     <div class="column gap-1 align-center">
-                        <span class="year">2023</span>
-                        <span id="list-name" class="list-name"></span>
+                        <span id="custom-title" class="custom-title"></span>
                     </div>
                 </div>
                 <div id="items-wrapper" class="items-wrapper"></div>

@@ -146,8 +146,13 @@ input {
 
 .save-items-btn {
     background-color: rgb(228, 45, 45);
-    width: 100%;
+    width: 60%;
     border-radius: 0 0 0px 8px;
+}
+
+.upload-items-btn {
+    background-color: rgb(1, 109, 15);
+    width: 60%;
 }
 
 .add-btn {
@@ -233,7 +238,7 @@ input {
 .items-wrapper {
     display: grid;
     grid-gap: 20px;
-    grid-auto-rows: 280px;
+    grid-auto-rows: 264px;
 }
 
 .item-wrapper {

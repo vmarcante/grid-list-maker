@@ -30,8 +30,11 @@
                             placeholder="Título de exibição"></input>
                     </div>
                     <div class="row">
-                        <button type="button" class="save-items-btn" id="save-items-btn" onclick="saveCache()">Salvar
-                            itens em cache </button>
+                        <button type="button" class="save-items-btn" id="save-items-btn"
+                            onclick="exportItems()">Exportar</button>
+                        <input hidden type="file" id="itemsUpload" accept=".csv">
+                        <button type="button" class="upload-items-btn" id="upload-items-btn"
+                            onclick="importItemsToggle()">Importar</button>
                         <button type="button" class="export-items-btn" id="export-items-btn"
                             onclick="saveImage()">Exportar para Imagem </button>
                     </div>
@@ -64,7 +67,7 @@
                         </div>
 
                         <div class="bannerUploadSection" id="bannerUploadSection">
-                            <input type="file" id="bannerUpload" accept="image/*">
+                            <input type="file" id="bannerUpload" accept=".jpg, .jpeg, .jfif, .png, .webp">
                         </div>
                         <div class="bannerUrlSection" id="bannerUrlSection">
                             <label for="bannerUrlInput">URL da Imagem:</label>

@@ -119,6 +119,7 @@ function initialSetup() {
     toggleBannerInput();
     renderColorsInput();
     document.getElementById('bannerUpload').addEventListener('change', convertFileToPreviewImg);
+    document.getElementById('itemsUpload').addEventListener('change', convertCsvFileToItems);
 }
 
 function toggleBannerInput() {
@@ -248,6 +249,8 @@ function convertFileToPreviewImg(uploadEvent) {
         return;
     }
     const file = input.files[0];
+    uploadEvent.target = "";
+    uploadEvent.files = [];
     if (file.type && file.type.indexOf('image') == -1) {
         alert('O arquivo selecionado não é uma imagem.');
         return;
@@ -259,8 +262,7 @@ function convertFileToPreviewImg(uploadEvent) {
         previewContainer.innerHTML = ItemRender(previewItem);
         handleStarCounterObserver();
 
-        uploadEvent.target = "";
-        uploadEvent.files = [];
+
         verifyCanAdd();
         verifyCanSaveImg();
 
@@ -270,13 +272,35 @@ function convertFileToPreviewImg(uploadEvent) {
     fileReader.readAsDataURL(file);
 }
 
+function convertCsvFileToItems(uploadEvent) {
+    const input = uploadEvent.target;
+    if (!input.files || input.files.length == 0) {
+        return;
+    }
+
+    const file = input.files[0];
+    uploadEvent.target = "";
+    uploadEvent.files = [];
+    if (file.type && file.type != 'text/csv') {
+        alert('O arquivo selecionado é inválido.');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        const csvData = event.target.result.replace("[object Object]", "");
+        items = JSON.parse(csvData);
+        renderAllItems();
+    };
+    reader.readAsText(file);
+}
+
 initialSetup();
 //=-=-=--=-=-=-=-=-=
 
 //=-=-=--=-=-=-=-=-=
 //  GRID SETUP
 function changeGridColumnsAndRows(numberOfColumns) {
-    // const numberOfColumns = document.getElementById("columnsSelect").value;
     let wrapperContainer = document.getElementById("items-wrapper");
     wrapperContainer.style.gridTemplateColumns = `repeat(${numberOfColumns}, minmax(220px, 1fr))`;
 }
@@ -353,33 +377,35 @@ function saveImage() {
     });
 }
 
-function saveCache() {
+function exportItems() {
     if (!items || items.length == 0) {
         sessionStorage.removeItem("grid-list-items");
         return;
     }
 
     try {
-        sessionStorage.setItem("grid-list-items", JSON.stringify(items));
-        alert("Os itens foram salvos no cache da sessão do navegador.");
+        const itemsBlob = new Blob([JSON.stringify(items), { type: 'text/csv;' }]);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.download = `Grid_Export_${dateToString(new Date())}.csv`;
+        downloadAnchor.href = window.URL.createObjectURL(itemsBlob);
+        downloadAnchor.style.display = 'none';
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
     } catch (exception) {
-        alert("Ocorreu um erro ao salvar os dados em cache do navegador, tente novamente com imagens menores.");
+        alert("Ocorreu um erro ao salvar os dados, tente novamente com imagens menores.");
     }
 }
 
-function getCacheItems() {
-    let itemsSaved = sessionStorage.getItem("grid-list-items");
-    if (!itemsSaved || itemsSaved == "") {
-        return;
-    }
-
-    items = JSON.parse(itemsSaved);
-    sessionStorage.removeItem("grid-list-items");
-    renderAllItems();
-    alert("Itens importados e removidos do cache, se necessário, salve novamente.");
-
+function importItemsToggle() {
+    document.getElementById("itemsUpload").click();
 }
 
-setTimeout(() => {
-    getCacheItems();
-}, 100);
+function dateToString(date) {
+    const dateAux = new Date(date);
+    const day = String(dateAux.getDate()).padStart(2, '0');
+    const month = String(dateAux.getMonth() + 1).padStart(2, '0');
+    const year = dateAux.getFullYear();
+
+    return `${day}_${month}_${year}`;
+}

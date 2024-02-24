@@ -322,3 +322,7 @@ input {
 .half-star.right {
     margin-right: 2px;
 }
+
+.item-date {
+    font-weight: bold;
+}

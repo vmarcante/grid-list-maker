@@ -45,6 +45,10 @@ const ItemRender = (itemObj, addToGrid) => {
         html += `<img class="completed" src="./assets/trophy.png"/>`
     }
 
+    if (itemObj.date) {
+        html += `<span class='item-date'>${formatDate(itemObj.date)}</span>`
+    }
+
     if (!addToGrid) {
         html += `<div id="rank-selector-wrapper" class="rank-selector-wrapper">`;
         for (let starPosition = 1; starPosition <= 10; starPosition++) {
@@ -80,6 +84,11 @@ const ColorInput = (color, indexId, activated) => {
 
 //=-=-=--=-=-=-=-=-=
 //  Utils
+
+function formatDate(date) {
+    const newDate = new Date(`${date}T00:00:00`);
+    return `${newDate.getDate().toString().padStart(2, '0')}/${(newDate.getMonth() + 1).toString().padStart(2, '0')}/${newDate.getFullYear().toString().padStart(4, '0')}`;
+}
 function stringValid(string, containsChar) {
     if (containsChar) {
         return string && (string.replace(/ /g, "") != "") && string.includes(containsChar);
@@ -118,8 +127,9 @@ function initialSetup() {
     verifyCanSaveImg();
     toggleBannerInput();
     renderColorsInput();
-    document.getElementById('bannerUpload').addEventListener('change', convertFileToPreviewImg);
-    document.getElementById('itemsUpload').addEventListener('change', convertCsvFileToItems);
+    document.getElementById("bannerUpload").addEventListener("change", convertFileToPreviewImg);
+    document.getElementById("itemsUpload").addEventListener("change", convertCsvFileToItems);
+    document.getElementById("itemDateInput").valueAsDate = new Date();
 }
 
 function toggleBannerInput() {
@@ -161,7 +171,6 @@ function updatePreview(propName, elementId, elementPropValue, isImage) {
         handleStarCounterObserver();
         verifyCanAdd();
         verifyCanSaveImg();
-
         return;
     } else {
         const imgElement = new Image();
@@ -332,10 +341,13 @@ function resetItem() {
     previewContainer.innerHTML = "";
     let inputs = document.getElementsByTagName("input");
     Array.from(inputs).forEach(x => {
-        if (x.type != "radio") {
+        if (x.type == "radio") {
+            x.checked = false;
+        } else if (x.type == "date") {
+            x.valueAsDate = new Date();
+        } else {
             x.value = "";
         }
-        x.checked = false;
     });
     verifyCanAdd();
     verifyCanSaveImg();
@@ -364,7 +376,9 @@ function autoAdjustCollumnsAndRows() {
     if (numberOfItems > 0) {
         const itemsHtmlCollection = [...document.querySelectorAll("#items-wrapper .item")];
         const maxHeightInCollection = itemsHtmlCollection.reduce((max, obj) => obj.clientHeight > max ? obj.clientHeight : max, itemsHtmlCollection[0].clientHeight);
-        changeGridColumnsAndRows(Math.round(Math.sqrt(numberOfItems)), (maxHeightInCollection + 48));
+
+        const containDate = items.find(x => x.date != null);
+        changeGridColumnsAndRows(Math.round(Math.sqrt(numberOfItems)), (maxHeightInCollection + (containDate ? 80 : 48)));
     }
 }
 

@@ -259,7 +259,7 @@ input {
     width: 40px;
     height: 40px;
     position: absolute;
-    bottom: -15px;
+    bottom: 30px;
     overflow: visible;
     z-index: 2;
 }

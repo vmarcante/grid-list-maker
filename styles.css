@@ -187,10 +187,6 @@ input {
     gap: 12px;
 }
 
-.items-wrapper {
-    margin: 10px;
-}
-
 .colorPreview {
     display: block;
     position: relative;
@@ -241,6 +237,8 @@ input {
     display: grid;
     grid-gap: 20px;
     grid-auto-rows: 264px;
+    margin: 10px;
+    align-items: end;
 }
 
 .item-wrapper {

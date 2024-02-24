@@ -13,7 +13,7 @@ const ItemRender = (itemObj, addToGrid) => {
     const headerTextValid = stringValid(itemObj.headerText);
     const headerColorValid = stringValid(itemObj.headerColor, "#");
     const bannerValid = stringValid(itemObj.imageBanner);
-    let html = `<div ${addToGrid ? "grid-item-" + itemObj.id : ""} class="item-wrapper">`;
+    let html = `<div ${addToGrid ? `id="grid-item-${itemObj.id}"` : ""} class="item-wrapper">`;
 
     if (!bannerValid) {
         return "";
@@ -300,9 +300,10 @@ initialSetup();
 
 //=-=-=--=-=-=-=-=-=
 //  GRID SETUP
-function changeGridColumnsAndRows(numberOfColumns) {
+function changeGridColumnsAndRows(numberOfColumns, rowHeight = 220) {
     let wrapperContainer = document.getElementById("items-wrapper");
     wrapperContainer.style.gridTemplateColumns = `repeat(${numberOfColumns}, minmax(220px, 1fr))`;
+    wrapperContainer.style.gridAutoRows = `${rowHeight}px`;
 }
 
 function changeListTitle() {
@@ -321,7 +322,7 @@ function addNewItem() {
     newItem.id = items.length + 1;
     items.push(newItem);
     itemsWrapperContainer.innerHTML += ItemRender(newItem, true);
-    autoAdjustCollumns();
+    autoAdjustCollumnsAndRows();
     resetItem();
 }
 
@@ -355,23 +356,26 @@ function renderAllItems() {
     });
     verifyCanAdd();
     verifyCanSaveImg();
-    autoAdjustCollumns();
+    autoAdjustCollumnsAndRows();
 }
 
-function autoAdjustCollumns() {
+function autoAdjustCollumnsAndRows() {
     const numberOfItems = items.length;
     if (numberOfItems > 0) {
-        changeGridColumnsAndRows(Math.round(Math.sqrt(numberOfItems)));
+        const itemsHtmlCollection = [...document.querySelectorAll("#items-wrapper .item")];
+        const maxHeightInCollection = itemsHtmlCollection.reduce((max, obj) => obj.clientHeight > max ? obj.clientHeight : max, itemsHtmlCollection[0].clientHeight);
+        changeGridColumnsAndRows(Math.round(Math.sqrt(numberOfItems)), (maxHeightInCollection + 48));
     }
 }
 
 function saveImage() {
     html2canvas(document.getElementById("result")).then(function (img) {
+        const titleInput = document.getElementById("listTitleInput").value;
         setTimeout(() => {
             let imageDataUrl = img.toDataURL("image/png");
             var a = document.createElement("a");
             a.href = imageDataUrl;
-            a.download = "Lista_2023.png";
+            a.download = `Lista_${titleInput}.png`;
             a.click();
         }, 100);
     });
@@ -379,14 +383,14 @@ function saveImage() {
 
 function exportItems() {
     if (!items || items.length == 0) {
-        sessionStorage.removeItem("grid-list-items");
         return;
     }
 
     try {
         const itemsBlob = new Blob([JSON.stringify(items), { type: 'text/csv;' }]);
         const downloadAnchor = document.createElement('a');
-        downloadAnchor.download = `Grid_Export_${dateToString(new Date())}.csv`;
+        const titleInput = document.getElementById("listTitleInput").value;
+        downloadAnchor.download = `Grid_Export_${titleInput}_${dateToString(new Date())}.csv`;
         downloadAnchor.href = window.URL.createObjectURL(itemsBlob);
         downloadAnchor.style.display = 'none';
         document.body.appendChild(downloadAnchor);

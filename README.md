@@ -1,0 +1,1 @@
+Este projeto não deve ser considerado projeto de portfólio, se trata apenas de uma estrutura simples de controle em Javascrit, de uma ideia de grupo de amigos que queriam manter registro com um layout visual de jogos de videogames que concluiram ao longo do ano.

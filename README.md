@@ -1,1 +1,2 @@
-Este projeto não deve ser considerado projeto de portfólio, se trata apenas de uma estrutura simples de controle em Javascrit, de uma ideia de grupo de amigos que queriam manter registro com um layout visual de jogos de videogames que concluiram ao longo do ano.
+Este projeto não deve ser considerado projeto de portfólio, se trata apenas de uma estrutura simples de controle em JavaScript, de uma ideia de grupo de amigos que queriam manter registro com um layout visual de jogos de videogames que concluiram ao longo do ano.
+Em paralelo está sendo desenvolvido dois projetos mais elaborados (API própria e UI), que visam aumentar a complexidade da ideia, suas regras de negócios e se tornar uma aplicação web de fato.
